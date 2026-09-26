@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block schema %}
+<script type="application/ld+json">{{ faq_schema | safe }}</script>
+<script type="application/ld+json">{{ products_schema | safe }}</script>
+<script type="application/ld+json">{{ breadcrumb_schema | safe }}</script>
+{% endblock %}
+
+{% block content %}
+
+<section class="hero car-hero">
+  <div class="hero-bg" aria-hidden="true">
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+  </div>
+  <div class="container">
+    <nav class="breadcrumb" aria-label="مسیر">
+      <a href="/">خانه</a><span>›</span><b>{{ car.name }}</b>
+    </nav>
+    <div class="hero-copy">
+      <div class="hero-badge" data-reveal><span class="pulse-dot"></span>لوازم بدنه {{ car.name }}</div>
+      <h1 class="hero-title">
+        <span class="line" data-reveal data-delay="1">لوازم بدنه</span>
+        <span class="line grad-text" data-reveal data-delay="2">{{ car.name }}</span>
+      </h1>
+      <p class="hero-sub" data-reveal data-delay="3">{{ car.intro }}</p>
+      <div class="hero-cta" data-reveal data-delay="4">
+        <a href="#car-products" class="btn btn-primary btn-lg">قطعات موجود {{ car.name_short }}</a>
+        <a href="tel:{{ c.phone }}" class="btn btn-ghost btn-lg">تماس و استعلام قیمت</a>
+      </div>
+      {% if car.variants %}
+      <div class="car-variants" data-reveal data-delay="5">
+        {% for v in car.variants %}<span class="variant-chip">{{ v }}</span>{% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<section class="section section-light products-section" id="car-products">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <span class="eyebrow">قطعات موجود</span>
+      <h2 class="section-title">{{ car.parts_intro | default('قطعات موجود ' + car.name) }}</h2>
+      <p class="section-sub">قیمت‌ها با نوسان بازار تغییر می‌کنند؛ برای قیمت روز و موجودی دقیق، تماس بگیرید.</p>
+    </div>
+    <div class="products-grid">
+      {% for p in car_products %}
+      <article class="p-card" data-reveal data-delay="{{ (loop.index % 4) + 1 }}" data-product='{{ {"id": p.id, "name": p.name, "car": p._car.name, "cat": p._cat.name, "price": (p.price if not p.price_on_call else 0), "price_on_call": p.price_on_call, "badges": p.badges, "colors": p.colors, "desc": p.description, "img": (p._img.full if p._img else ""), "in_stock": p.in_stock} | tojson }}'>
+        <button class="p-media" data-quickview aria-label="جزئیات {{ p.name }}">
+          {% if p._img %}
+          <img src="{{ p._img.lqip }}" data-src="{{ p._img.card }}" alt="{{ p.name }}" width="675" height="900" loading="lazy" decoding="async" class="lazy-img">
+          {% endif %}
+          <div class="p-badges">{% for b in p.badges %}<span class="pbadge">{{ b }}</span>{% endfor %}</div>
+        </button>
+        <div class="p-info">
+          <div class="p-meta"><span class="p-cat">{{ p._cat.name }}</span></div>
+          <h3 class="p-name">{{ p.name }}</h3>
+          <div class="p-foot">
+            {% if p.price_on_call %}<span class="p-price p-price-call">استعلام تلفنی</span>
+            {% else %}<span class="p-price"><b>{{ p.price | price_fmt }}</b> تومان</span>{% endif %}
+            <a href="tel:{{ c.phone }}" class="p-cta">تماس برای سفارش</a>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section-light">
+  <div class="container prose">
+    {% for sec in car.body %}
+    <div class="prose-block" data-reveal>
+      <h2>{{ sec.h2 }}</h2>
+      <p>{{ sec.text | linkify }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section section-light faq-section">
+  <div class="container faq-container">
+    <div class="section-head" data-reveal>
+      <span class="eyebrow">سوالات متداول</span>
+      <h2 class="section-title">سوالات متداول <em class="grad-text-dark">{{ car.name_short }}</em></h2>
+    </div>
+    <div class="faq-list" data-reveal>
+      {% for f in car.faq %}
+      <details class="faq-item" {% if loop.index == 1 %}open{% endif %}>
+        <summary><span>{{ f.q }}</span><i class="faq-plus" aria-hidden="true"></i></summary>
+        <div class="faq-body"><p>{{ f.a }}</p></div>
+      </details>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section-dark contact-section">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <span class="eyebrow eyebrow-dark">تماس</span>
+      <h2 class="section-title">برای استعلام قطعات <em class="grad-text">{{ car.name_short }}</em> تماس بگیرید</h2>
+    </div>
+    <div class="contact-grid">
+      <a href="tel:{{ c.phone }}" class="c-card c-card-phone" data-reveal>
+        <div class="c-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg></div>
+        <div><span class="c-label">تماس ثابت</span><b class="c-value c-rtl-num" dir="ltr">{{ c.phone_display }}</b><span class="c-hint">{{ c.hours }}</span></div>
+      </a>
+      <div class="c-card c-card-address" data-reveal data-delay="1">
+        <div class="c-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a8 8 0 0 0-8 8c0 5.4 8 12 8 12s8-6.6 8-12a8 8 0 0 0-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg></div>
+        <div><span class="c-label">آدرس</span><b class="c-value">{{ c.address }}</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="final-cta">
+  <div class="container">
+    <h2 class="final-title" data-reveal>سفارش قطعات {{ car.name }} فقط با یک تماس</h2>
+    <p data-reveal data-delay="1">رنگ کوره‌ای شرکتی · قطعات فابریک · ۵ سال ضمانت رنگ · ارسال سراسری</p>
+    <a href="tel:{{ c.phone }}" class="btn btn-primary btn-xl" data-reveal data-delay="2">تماس: {{ c.phone_display }}</a>
+  </div>
+</section>
+
+{% endblock %}

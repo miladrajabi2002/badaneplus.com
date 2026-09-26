@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="amber" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFC96B"/>
+      <stop offset=".5" stop-color="#F2A83B"/>
+      <stop offset="1" stop-color="#D9821F"/>
+    </linearGradient>
+    <linearGradient id="dark" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1A212C"/>
+      <stop offset="1" stop-color="#0B0E13"/>
+    </linearGradient>
+  </defs>
+  <!-- hexagon plate -->
+  <path d="M256 34 L446 144 V368 L256 478 L66 368 V144 Z" fill="url(#dark)" stroke="url(#amber)" stroke-width="14"/>
+  <!-- stylized hood/panel mark -->
+  <path d="M150 300 C 190 208, 322 208, 362 300" fill="none" stroke="url(#amber)" stroke-width="26" stroke-linecap="round"/>
+  <path d="M256 258 V 356" stroke="url(#amber)" stroke-width="26" stroke-linecap="round"/>
+  <circle cx="256" cy="182" r="17" fill="url(#amber)"/>
+</svg>

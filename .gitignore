@@ -1,0 +1,20 @@
+# ---- deps & build ----
+node_modules/
+.next/
+out/
+live/
+
+# ---- runtime & secrets (هرگز کامیت نشود!) ----
+var/
+.env
+bot/config.json
+
+# ---- legacy python ----
+bot/venv/
+__pycache__/
+*.pyc
+site/
+
+# ---- misc ----
+*.log
+.DS_Store

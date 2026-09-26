@@ -1,0 +1,470 @@
+{% extends "base.html" %}
+{% block head %}
+<link rel="preload" href="/assets/img/site/hero-card.webp" as="image" fetchpriority="high">
+{% endblock %}
+{% block schema %}
+<script type="application/ld+json">{{ faq_schema | safe }}</script>
+<script type="application/ld+json">{{ products_schema | safe }}</script>
+{% endblock %}
+
+{% block content %}
+
+{# ================= HERO (fits first screen — no scroll needed) ================= #}
+<section class="hero" id="home">
+  <div class="hero-bg" aria-hidden="true">
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+  </div>
+  <div class="container hero-inner">
+    <div class="hero-copy">
+      <div class="hero-badge" data-reveal>
+        <span class="pulse-dot" aria-hidden="true"></span>
+        {{ s.hero.badge }}
+      </div>
+      <h1 class="hero-title">
+        <span class="line" data-reveal data-delay="1">{{ s.hero.title_1 }}</span>
+        <span class="line grad-text" data-reveal data-delay="2">{{ s.hero.title_2 }}</span>
+      </h1>
+      <p class="hero-sub" data-reveal data-delay="3">
+        <span class="only-desktop">{{ s.hero.subtitle }}</span>
+        <span class="only-mobile">{{ s.hero.subtitle_short }}</span>
+      </p>
+      <div class="hero-cta" data-reveal data-delay="4">
+        <a href="#products" class="btn btn-primary btn-lg">
+          {{ s.hero.cta_primary }}
+          <svg viewBox="0 0 24 24" class="ico ico-flip" aria-hidden="true"><path d="M11 4l1.4 1.4L7.8 10H20v2H7.8l4.6 4.6L11 18l-7-7 7-7z"/></svg>
+        </a>
+        <a href="tel:{{ c.phone }}" class="btn btn-ghost btn-lg">
+          <svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg>
+          {{ s.hero.cta_secondary }}
+        </a>
+      </div>
+      <div class="hero-trust" data-reveal data-delay="5">
+        <div class="trust-item"><b>رنگ کوره‌ای</b><span>شرکتی</span></div>
+        <div class="trust-sep" aria-hidden="true"></div>
+        <div class="trust-item"><b>قطعات فابریک</b><span>اصل کارخانه</span></div>
+        <div class="trust-sep" aria-hidden="true"></div>
+        <div class="trust-item"><b>ارسال</b><span>سراسر کشور</span></div>
+      </div>
+    </div>
+    <div class="hero-visual" data-reveal data-delay="3">
+      <div class="hero-frame">
+        <img src="/assets/img/site/hero-card.webp" alt="کاپوت خودرو با نورپردازی کوره‌ای — بدنه پلاس" width="648" height="864" fetchpriority="high" decoding="async">
+        <div class="hero-chip chip-1">
+          <svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M12 2l4 2 4 5-2 5-1 8h-3l-1-6h-2l-1 6H7l-1-8-2-5 4-5 4-2z"/></svg>
+          <div><b>ضمانت رنگ</b><span>۵ سال کامل</span></div>
+        </div>
+        <div class="hero-chip chip-2">
+          <svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M3 13h2v7H3v-7zm4-6h2v13H7V7zm4 3h2v10h-2V10zm4-7h2v17h-2V3z"/></svg>
+          <div><b>پخت کوره‌ای</b><span>درجه یک</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-stats container" data-reveal>
+    {% for st in s.stats %}
+    <div class="stat">
+      <b class="stat-num"><span class="counter" data-count="{{ st.value }}">۰</span>{{ st.suffix }}</b>
+      <span class="stat-label">{{ st.label }}</span>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+{# ================= MARQUEE ================= #}
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    {% set brands = ['پژو ۲۰۶', 'سمند', 'سورن', 'پژو ۴۰۵', 'پارس', 'پراید', 'تیبا', 'دنا', 'رانا', 'شاهین'] %}
+    {% for i in range(2) %}
+    <div class="marquee-group">
+      {% for b in brands %}
+      <span class="marquee-item">{{ b }}</span>
+      <span class="marquee-star">✦</span>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{# ================= USP / ADVANTAGES ================= #}
+<section class="section section-dark usp-section" id="advantages">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <span class="eyebrow">چرا بدنه پلاس؟</span>
+      <h2 class="section-title">استانداردی که <em class="grad-text">پایه‌گذار</em> آن هستیم</h2>
+      <p class="section-sub">در بازار لوازم بدنه، تفاوت اصلی بین یک خرید پشیمان‌کننده و یک خرید مطمئن، کیفیت قطعه و رنگ آن است. ما هر دو را تضمین می‌کنیم.</p>
+    </div>
+    <div class="usp-grid">
+      <article class="usp-card usp-kiln" data-reveal data-delay="1">
+        <div class="usp-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c2 3 3.5 4.5 3.5 7a3.5 3.5 0 0 1-7 0c0-1 .3-1.9.8-2.7C9.8 7.6 10.9 6 12 2zm-7 14c0-2.5 1.3-4.7 3.2-6-.2 1-.3 1.7-.3 2.4 0 2.6 2.1 4.6 4.6 4.6.8 0 1.6-.2 2.3-.6-.6 2.9-3.2 5.1-6.3 5.1-2.5 0-4.5-2.4-3.5-5.5zM19.8 13c.8 1.2 1.2 2.6 1.2 4 0 3-2.4 5.5-5.4 5.5-.9 0-1.7-.2-2.5-.6 2.5-.9 4.3-3.2 4.5-6 .1-1 .1-2 .2-2.9.7-.1 1.4-.1 2 0z"/></svg>
+        </div>
+        <h3>رنگ کوره‌ای شرکتی</h3>
+        <p>
+          <span class="only-desktop">رنگ قطعات در کوره و دمای کنترل‌شده پخت می‌شود؛ همان فرآیند کارخانه‌ای. چسبندگی چند برابر، برفک‌زدگی صفر و درخشش ماندگار در برابر آفتاب ایران.</span>
+          <span class="only-mobile">همان فرآیند رنگ کارخانه؛ چسبندگی چند برابر و برفک‌زدگی صفر.</span>
+        </p>
+        <span class="usp-tag">پخت کامل · بدون پرزدگی</span>
+      </article>
+      <article class="usp-card" data-reveal data-delay="2">
+        <div class="usp-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 20h20v2H2v-2zm2-4h4v3H4v-3zm5-6h4v9H9v-9zm5-8h4v17h-4V2z"/></svg>
+        </div>
+        <h3>قطعات فابریک</h3>
+        <p>
+          <span class="only-desktop">قطعه اصل کارخانه با پرس دقیق، ضخامت فلز استاندارد و نقاط نصب هم‌اندازه؛ نصب بدون صافکاری و درزگیری مثل روز اول.</span>
+          <span class="only-mobile">پرس دقیق کارخانه؛ نصب بدون صافکاری و درزگیری.</span>
+        </p>
+        <span class="usp-tag">پرس کارخانه · ابعاد دقیق</span>
+      </article>
+      <article class="usp-card usp-warranty" data-reveal data-delay="3">
+        <div class="usp-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1l9 4v6c0 5.5-3.8 10.7-9 12-5.2-1.3-9-6.5-9-12V5l9-4zm-1.2 14.5l6-6-1.4-1.4-4.6 4.6-2.2-2.2-1.4 1.4 3.6 3.6z"/></svg>
+        </div>
+        <h3>۵ سال ضمانت رنگ</h3>
+        <p>
+          <span class="only-desktop">به کیفیت رنگمان آن‌قدر مطمئنیم که روی <strong>تمام اجناس</strong> ۵ سال ضمانت می‌دهیم؛ شامل برفک، تغییر رنگ و ترک سطح. مکتوب روی فاکتور.</span>
+          <span class="only-mobile">روی <strong>تمام اجناس</strong>؛ شامل برفک و تغییر رنگ — مکتوب روی فاکتور.</span>
+        </p>
+        <span class="usp-tag">مکتوب روی فاکتور</span>
+      </article>
+      <article class="usp-card" data-reveal data-delay="4">
+        <div class="usp-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h11v9H3V5zm2 2v5h7V7H5zm9 3h4l3 3v4h-7v-7zm2 2v2h3l-2-2h-1zM7 17h6v2H7v-2z"/></svg>
+        </div>
+        <h3>ارسال به سراسر کشور</h3>
+        <p>
+          <span class="only-desktop">از تهران تا دورترین نقاط ایران؛ بسته‌بندی حرفه‌ای مخصوص قطعات بدنه (کاپوت، سپر، گلگیر) تا سالم و بی‌خش به دستتان برسد.</span>
+          <span class="only-mobile">بسته‌بندی حرفه‌ای مخصوص قطعات بدنه؛ سالم به سراسر کشور.</span>
+        </p>
+        <span class="usp-tag">بسته‌بندی حرفه‌ای · بیمه مسیر</span>
+      </article>
+    </div>
+  </div>
+</section>
+
+{# ================= PRODUCTS ================= #}
+<section class="section section-light products-section" id="products">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <span class="eyebrow">ویترین محصولات</span>
+      <h2 class="section-title">قطعه‌ی مورد نظر را <em class="grad-text-dark">پیدا کنید</em></h2>
+      <p class="section-sub">
+        <span class="only-desktop">هر قطعه با دو گزینه کیفیت عرضه می‌شود: فابریک یا رنگ کوره‌ای شرکتی — هر دو با ۵ سال ضمانت رنگ. برای استعلام قیمت روز، تماس بگیرید.</span>
+        <span class="only-mobile">فابریک یا رنگ کوره‌ای — هر دو با ۵ سال ضمانت رنگ.</span>
+      </p>
+    </div>
+
+    <div class="filters" data-reveal>
+      <div class="filter-row filter-cars" role="tablist" aria-label="فیلتر خودرو">
+        <button class="fchip is-active" data-car="all" role="tab" aria-selected="true">همه خودروها</button>
+        {% for car in cars %}{% if car._products %}
+        <button class="fchip" data-car="{{ car.id }}" role="tab" aria-selected="false">{{ car.name }}</button>
+        {% endif %}{% endfor %}
+      </div>
+      <div class="filter-row filter-cats" role="tablist" aria-label="فیلتر دسته‌بندی">
+        <button class="fchip fchip-cat is-active" data-cat="all" role="tab" aria-selected="true">همه قطعات</button>
+        {% set used_cats = [] %}
+        {% for p in all_products %}{% if p.category not in used_cats %}{% do used_cats.append(p.category) %}{% endif %}{% endfor %}
+        {% for cat in categories %}{% if cat.id in used_cats %}
+        <button class="fchip fchip-cat" data-cat="{{ cat.id }}" role="tab" aria-selected="false">{{ cat.name }}</button>
+        {% endif %}{% endfor %}
+      </div>
+    </div>
+
+    <div class="products-grid" id="productsGrid">
+      {% for p in all_products %}
+      <article class="p-card" data-car="{{ p.car }}" data-cat="{{ p.category }}" data-reveal data-delay="{{ (loop.index % 4) + 1 }}" data-product='{{ {"id": p.id, "name": p.name, "car": p._car.name, "cat": p._cat.name, "price": (p.price if not p.price_on_call else 0), "price_on_call": p.price_on_call, "badges": p.badges, "colors": p.colors, "desc": p.description, "img": (p._img.full if p._img else ""), "in_stock": p.in_stock} | tojson }}'>
+        <button class="p-media" data-quickview aria-label="جزئیات {{ p.name }}">
+          {% if p._img %}
+          <img src="{{ p._img.lqip }}" data-src="{{ p._img.card }}" alt="{{ p.name }}" width="675" height="900" loading="lazy" decoding="async" class="lazy-img">
+          {% else %}
+          <div class="p-placeholder"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 13h2v7H5v-7zm4-6h2v13H9V7zm4 3h2v10h-2V10zm4-7h2v17h-2V3z"/></svg></div>
+          {% endif %}
+          <div class="p-badges">
+            {% for b in p.badges %}<span class="pbadge pbadge-{{ loop.index }}">{{ b }}</span>{% endfor %}
+          </div>
+          {% if not p.in_stock %}<span class="p-oos">ناموجود</span>{% endif %}
+        </button>
+        <div class="p-info">
+          <div class="p-meta">
+            <span class="p-car">{{ p._car.name }}</span>
+            <span class="p-dot" aria-hidden="true"></span>
+            <span class="p-cat">{{ p._cat.name }}</span>
+          </div>
+          <h3 class="p-name">{{ p.name }}</h3>
+          <div class="p-foot">
+            {% if p.price_on_call %}
+            <span class="p-price p-price-call">استعلام تلفنی</span>
+            {% else %}
+            <span class="p-price"><b>{{ p.price | price_fmt }}</b> تومان</span>
+            {% endif %}
+            <a href="tel:{{ c.phone }}" class="p-cta">تماس برای سفارش</a>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    <p class="products-note" data-reveal>چیزی که می‌خواهید را پیدا نکردید؟ لیست سایت بخشی از موجودی ماست — <a href="tel:{{ c.phone }}">تماس بگیرید</a>، احتمالا موجود است.</p>
+  </div>
+</section>
+
+{# ================= WARRANTY BAND ================= #}
+<section class="section warranty-band" id="warranty">
+  <div class="container warranty-inner">
+    <div class="warranty-visual" data-reveal>
+      <div class="warranty-big">
+        <span class="counter grad-text" data-count="5">۰</span>
+        <span class="warranty-years">سال</span>
+      </div>
+      <svg class="warranty-ring" viewBox="0 0 200 200" aria-hidden="true">
+        <circle cx="100" cy="100" r="88" fill="none" stroke="rgba(242,168,59,.12)" stroke-width="2"/>
+        <circle cx="100" cy="100" r="76" fill="none" stroke="rgba(242,168,59,.2)" stroke-width="1" stroke-dasharray="4 8"/>
+        <circle class="warranty-arc" cx="100" cy="100" r="88" fill="none" stroke="url(#arcGrad)" stroke-width="3" stroke-linecap="round" stroke-dasharray="553" stroke-dashoffset="553"/>
+        <defs><linearGradient id="arcGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#FFC96B"/><stop offset="1" stop-color="#D9821F"/>
+        </linearGradient></defs>
+      </svg>
+    </div>
+    <div class="warranty-copy" data-reveal data-delay="2">
+      <span class="eyebrow eyebrow-dark">ضمانت واقعی، نه شعار</span>
+      <h2 class="section-title">۵ سال ضمانت رنگ روی <em class="grad-text">تمام اجناس</em></h2>
+      <p>
+        <span class="only-desktop">ضمانت رنگ بدنه پلاس شامل برفک‌زدگی، تغییر رنگ، ترک خوردن و جوش‌زدگی سطح رنگ است و مکتوب روی فاکتور خرید درج می‌شود. چون رنگ کوره‌ای شرکتی که روی قطعات اجرا می‌کنیم، همان فرآیند پخت کارخانه را دارد، می‌توانیم این تعهد را بدهیم؛ رنگ معمولی چنین ضمانتی را ممکن نمی‌کند.</span>
+        <span class="only-mobile">شامل برفک‌زدگی، تغییر رنگ و ترک سطح — مکتوب روی فاکتور خرید. چون رنگ کوره‌ای همان پخت کارخانه را دارد، این تعهد ممکن است.</span>
+      </p>
+      <ul class="check-list">
+        <li>شامل برفک، تغییر رنگ و ترک سطح</li>
+        <li>مکتوب روی فاکتور خرید</li>
+        <li>معتبر برای تمام قطعات بدنه</li>
+      </ul>
+      <a href="tel:{{ c.phone }}" class="btn btn-primary btn-lg">استعلام با تماس</a>
+    </div>
+  </div>
+</section>
+
+{# ================= KILN PAINT ================= #}
+<section class="section section-light kiln-section" id="kiln">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <span class="eyebrow">رنگ کوره‌ای چیست؟</span>
+      <h2 class="section-title">فرق رنگ کوره‌ای با رنگ معمولی، <em class="grad-text-dark">فرق کوره با فن</em> است</h2>
+      <p class="section-sub">رنگ کوره‌ای در دمای کنترل‌شده و زمان مشخص در کوره پخت می‌شود؛ مولکول‌های رنگ کاملا به فلز جوش می‌خورند. نتیجه؟ رنگی که سال‌ها مثل روز اول می‌ماند.</p>
+    </div>
+    <div class="kiln-grid">
+      <div class="kiln-compare" data-reveal>
+        <div class="kcard kcard-kiln">
+          <header>
+            <span class="k-badge">بدنه پلاس</span>
+            <h3>رنگ کوره‌ای شرکتی</h3>
+          </header>
+          <ul>
+            <li class="win">پخت کامل در کوره صنعتی</li>
+            <li class="win only-desktop">چسبندگی مولکولی به فلز</li>
+            <li class="win">مقاوم به آفتاب و رطوبت</li>
+            <li class="win">ضمانت ۵ ساله رنگ</li>
+          </ul>
+        </div>
+        <div class="kcard kcard-normal">
+          <header>
+            <span class="k-badge k-badge-gray">رایج بازار</span>
+            <h3>رنگ اسپری معمولی</h3>
+          </header>
+          <ul>
+            <li class="lose">خشک شدن هوا (بدون پخت)</li>
+            <li class="lose only-desktop">لایه رنگی روی سطح فلز</li>
+            <li class="lose only-desktop">حساس به آفتاب و شوینده</li>
+            <li class="lose">بدون ضمانت واقعی</li>
+          </ul>
+        </div>
+      </div>
+      <div class="kiln-visual" data-reveal data-delay="2">
+        <img src="/assets/img/blog/b-kiln-card.webp" alt="رنگ‌کوری صنعتی بدنه پلاس — پخت رنگ کوره‌ای" width="880" height="503" loading="lazy" decoding="async">
+        <div class="kiln-note">
+          <b>چرا مهم است؟</b>
+          <span>
+            <span class="only-desktop">بیشتر شکایت‌های خرید قطعه بدنه، از بی‌کیفیتی رنگ است نه خود قطعه. با رنگ کوره‌ای، این ریسک صفر می‌شود.</span>
+            <span class="only-mobile">بیشتر شکایت‌ها از بی‌کیفیتی رنگ است، نه خود قطعه.</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ================= ORDER STEPS ================= #}
+<section class="section section-light steps-section" id="order">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <span class="eyebrow">سفارش تلفنی، ساده و سریع</span>
+      <h2 class="section-title">سفارش در <em class="grad-text-dark">۳ قدم</em></h2>
+      <p class="section-sub">بدون ثبت‌نام و پیچیدگی — قطعه تا خانه‌تان می‌رسد.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="steps-line" aria-hidden="true"><i></i></div>
+      <article class="step" data-reveal data-delay="1">
+        <div class="step-badge">
+          <span class="step-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg>
+          </span>
+          <span class="step-num">۱</span>
+        </div>
+        <h3>تماس بگیرید</h3>
+        <p>
+          <span class="only-desktop">مدل خودرو و قطعه مورد نظرتان را بگویید؛ کارشناس ما مدل دقیق و گزینه‌های موجود را معرفی می‌کند.</span>
+          <span class="only-mobile">مدل خودرو و قطعه‌ی مورد نظرتان را بگویید.</span>
+        </p>
+      </article>
+      <article class="step" data-reveal data-delay="2">
+        <div class="step-badge">
+          <span class="step-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.4 11.6l-2.7-2.7c-.4-.4-.9-.6-1.4-.6H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h1l1.6-1.6a1.5 1.5 0 0 1 2.1 0L11 18h4.3l1.5-1.5a1.5 1.5 0 0 1 2.1 0l1.4 1.4c.7-.3 1.2-1 1.2-1.9v-2.8c0-.5-.2-1-.6-1.4zM15 13.5c0 .8-.7 1.5-1.5 1.5S12 14.3 12 13.5v-3c0-.8.7-1.5 1.5-1.5s1.5.7 1.5 1.5v3z"/></svg>
+          </span>
+          <span class="step-num">۲</span>
+        </div>
+        <h3>استعلام و انتخاب</h3>
+        <p>
+          <span class="only-desktop">قیمت روز، موجودی واقعی و زمان آماده‌سازی را در همان تماس دریافت کنید و با خیال راحت انتخاب کنید.</span>
+          <span class="only-mobile">قیمت روز و موجودی را در همان تماس بپرسید.</span>
+        </p>
+      </article>
+      <article class="step" data-reveal data-delay="3">
+        <div class="step-badge">
+          <span class="step-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h11v9H3V5zm2 2v5h7V7H5zm9 3h4l3 3v4h-7v-7zm2 2v2h3l-2-2h-1zM7 17h6v2H7v-2z"/></svg>
+          </span>
+          <span class="step-num">۳</span>
+        </div>
+        <h3>تحویل یا ارسال</h3>
+        <p>
+          <span class="only-desktop">تحویل حضوری در تهران یا ارسال بیمه‌شده با بسته‌بندی حرفه‌ای به همه نقاط کشور.</span>
+          <span class="only-mobile">حضوری در تهران، یا ارسال بیمه‌شده به همه نقاط کشور.</span>
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+{# ================= BLOG PREVIEW ================= #}
+<section class="section section-light blog-section">
+  <div class="container">
+    <div class="section-head section-head-row" data-reveal>
+      <div>
+        <span class="eyebrow">وبلاگ بدنه پلاس</span>
+        <h2 class="section-title">راهنمای خرید و <em class="grad-text-dark">دانش خودرو</em></h2>
+      </div>
+      <a href="/blog/" class="btn btn-ghost-dark btn-sm">همه مقالات</a>
+    </div>
+    <div class="blog-grid">
+      {% for post in posts[:3] %}
+      <a href="/blog/{{ post.slug }}/" class="b-card" data-reveal data-delay="{{ loop.index }}">
+        <div class="b-media">
+          {% set img_dir = 'blog' if post.image.startswith('b-') else 'products' %}
+          <img src="/assets/img/{{ img_dir }}/{{ post.image }}-card.webp" alt="{{ post.title }}" width="880" height="503" loading="lazy" decoding="async">
+        </div>
+        <div class="b-info">
+          <div class="b-meta"><span class="b-cat">{{ post.category }}</span><span>·</span><span>{{ post.read_time }} دقیقه مطالعه</span></div>
+          <h3 class="b-title">{{ post.title }}</h3>
+          <p class="b-excerpt">{{ post.excerpt }}</p>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ================= FAQ ================= #}
+<section class="section section-light faq-section" id="faq">
+  <div class="container faq-container">
+    <div class="section-head" data-reveal>
+      <span class="eyebrow">سوالات متداول</span>
+      <h2 class="section-title">هر چیزی که باید <em class="grad-text-dark">بدانید</em></h2>
+    </div>
+    <div class="faq-list" data-reveal>
+      {% for f in faq_main %}
+      <details class="faq-item" {% if loop.index == 1 %}open{% endif %}>
+        <summary>
+          <span>{{ f.q }}</span>
+          <i class="faq-plus" aria-hidden="true"></i>
+        </summary>
+        <div class="faq-body"><p>{{ f.a }}</p></div>
+      </details>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ================= CONTACT / MAP ================= #}
+<section class="section section-dark contact-section" id="contact">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <span class="eyebrow eyebrow-dark">تماس و آدرس</span>
+      <h2 class="section-title">تماس بگیرید یا <em class="grad-text">تشریف بیارید</em></h2>
+      <p class="section-sub">برای استعلام قیمت و مشاوره تلفنی رایگان، همین حالا تماس بگیرید. برای خرید حضوری، مسیر را روی نقشه دلخواهتان ببینید.</p>
+    </div>
+    <div class="contact-grid">
+      <a href="tel:{{ c.phone }}" class="c-card c-card-phone" data-reveal>
+        <div class="c-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg>
+        </div>
+        <div>
+          <span class="c-label">تماس ثابت</span>
+          <b class="c-value c-rtl-num" dir="ltr">{{ c.phone_display }}</b>
+          <span class="c-hint">شنبه تا پنجشنبه · ۹ تا ۱۹</span>
+        </div>
+      </a>
+      {% if c.mobile %}
+      <a href="tel:{{ c.mobile }}" class="c-card c-card-phone" data-reveal data-delay="1">
+        <div class="c-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zm-5 18a1.4 1.4 0 1 1 0-2.8 1.4 1.4 0 0 1 0 2.8z"/></svg>
+        </div>
+        <div>
+          <span class="c-label">موبایل / واتس‌اپ</span>
+          <b class="c-value c-rtl-num" dir="ltr">{{ c.mobile_display }}</b>
+          <span class="c-hint">پاسخگویی سریع</span>
+        </div>
+      </a>
+      {% endif %}
+      <div class="c-card c-card-address" data-reveal data-delay="2">
+        <div class="c-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a8 8 0 0 0-8 8c0 5.4 8 12 8 12s8-6.6 8-12a8 8 0 0 0-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg>
+        </div>
+        <div>
+          <span class="c-label">آدرس فروشگاه</span>
+          <b class="c-value">{{ c.address }}</b>
+        </div>
+      </div>
+    </div>
+    <div class="map-cta" data-reveal>
+      <span class="map-label">مسیر را روی نقشه ببینید:</span>
+      <div class="map-btns">
+        <a href="{{ c.map_google }}" target="_blank" rel="noopener" class="btn btn-ghost map-btn">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a8 8 0 0 0-8 8c0 5.4 8 12 8 12s8-6.6 8-12a8 8 0 0 0-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg>
+          گوگل‌مپ
+        </a>
+        <a href="{{ c.map_neshan }}" target="_blank" rel="noopener" class="btn btn-ghost map-btn">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a8 8 0 0 0-8 8c0 5.4 8 12 8 12s8-6.6 8-12a8 8 0 0 0-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg>
+          نشان
+        </a>
+        <a href="{{ c.map_balad }}" target="_blank" rel="noopener" class="btn btn-ghost map-btn">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a8 8 0 0 0-8 8c0 5.4 8 12 8 12s8-6.6 8-12a8 8 0 0 0-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg>
+          بلد
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ================= FINAL CTA ================= #}
+<section class="final-cta">
+  <div class="container">
+    <h2 class="final-title" data-reveal>یک <em class="grad-text">تماس</em> کافیه</h2>
+    <p data-reveal data-delay="1">قیمت روز، موجودی دقیق و مشاوره تخصصی — همه در یک تماس.</p>
+    <a href="tel:{{ c.phone }}" class="btn btn-primary btn-xl" data-reveal data-delay="2">
+      <svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg>
+      همین حالا تماس بگیرید
+    </a>
+  </div>
+</section>
+
+{% endblock %}

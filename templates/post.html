@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block schema %}
+<script type="application/ld+json">{{ post_schema | safe }}</script>
+<script type="application/ld+json">{{ breadcrumb_schema | safe }}</script>
+{% endblock %}
+
+{% block content %}
+
+<article class="hero post-hero">
+  <div class="hero-bg" aria-hidden="true">
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+  </div>
+  <div class="container">
+    <nav class="breadcrumb" aria-label="مسیر"><a href="/">خانه</a><span>›</span><a href="/blog/">وبلاگ</a><span>›</span><b>{{ post.category }}</b></nav>
+    <div class="post-hero-copy">
+      <div class="post-meta" data-reveal>
+        <span class="b-cat">{{ post.category }}</span>
+        <span>·</span>
+        <span>{{ post.read_time }} دقیقه مطالعه</span>
+        <span>·</span>
+        <span>{{ post.date | jdate }}</span>
+      </div>
+      <h1 class="post-title" data-reveal data-delay="1">{{ post.h1 }}</h1>
+      <p class="post-excerpt" data-reveal data-delay="2">{{ post.excerpt }}</p>
+    </div>
+    <div class="post-cover" data-reveal data-delay="2">
+      {% set img_dir = 'blog' if post.image.startswith('b-') else 'products' %}
+      
+      <img src="/assets/img/{{ img_dir }}/{{ post.image }}-full.webp" alt="{{ post.title }}" width="1344" height="768" fetchpriority="high" decoding="async">
+    </div>
+  </div>
+</article>
+
+<div class="section section-light">
+  <div class="container post-layout">
+    <div class="post-content">
+      {% for b in post.blocks %}
+        {% if b.type == 'p' %}<p>{{ b.text | linkify }}</p>
+        {% elif b.type == 'h2' %}<h2>{{ b.text }}</h2>
+        {% elif b.type == 'h3' %}<h3>{{ b.text }}</h3>
+        {% elif b.type == 'list' %}
+        <ul class="post-list">
+          {% for item in b['items'] %}<li>{{ item | linkify }}</li>{% endfor %}
+        </ul>
+        {% elif b.type == 'tip' %}
+        <aside class="post-tip">
+          <b>{{ b.title | default('نکته بدنه پلاس') }}</b>
+          <p>{{ b.text }}</p>
+        </aside>
+        {% elif b.type == 'table' %}
+        <div class="table-wrap">
+          <table>
+            <thead><tr>{% for h in b.headers %}<th>{{ h }}</th>{% endfor %}</tr></thead>
+            <tbody>{% for row in b.rows %}<tr>{% for cell in row %}<td>{{ cell }}</td>{% endfor %}</tr>{% endfor %}</tbody>
+          </table>
+        </div>
+        {% elif b.type == 'cta' %}
+        <div class="post-cta">
+          <p>{{ b.text }}</p>
+          <a href="{{ b.href | default('#contact') }}" class="btn btn-primary">
+            <svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg>
+            {{ b.label | default('استعلام قیمت تلفنی') }}
+          </a>
+        </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <aside class="post-sidebar">
+      <div class="side-box">
+        <h4>سفارش و استعلام</h4>
+        <p>قیمت روز و موجودی قطعات بدنه خودروهای ایرانی را تلفنی بپرسید:</p>
+        <a href="tel:{{ c.phone }}" class="btn btn-primary btn-block">
+          <svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg>
+          {{ c.phone_display }}
+        </a>
+        <ul class="side-list">
+          <li>🛡 ۵ سال ضمانت رنگ</li>
+          <li>🏭 قطعات فابریک و رنگ کوره‌ای</li>
+          <li>🚚 ارسال به سراسر کشور</li>
+        </ul>
+      </div>
+      {% if related %}
+      <div class="side-box">
+        <h4>مقالات مرتبط</h4>
+        {% for r in related %}
+        <a href="/blog/{{ r.slug }}/" class="side-post">
+          <b>{{ r.title }}</b>
+          <span>{{ r.read_time }} دقیقه مطالعه</span>
+        </a>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </aside>
+  </div>
+</div>
+
+{% endblock %}
