@@ -1,16 +1,31 @@
 {
-  "name": "بدنه پلاس | BadanePlus — لوازم بدنه خودروهای ایرانی",
+  "name": "بدنه پلاس — مرجع لوازم بدنه خودروهای ایرانی",
   "short_name": "بدنه پلاس",
   "description": "لوازم بدنه خودروهای ایرانی؛ رنگ کوره‌ای شرکتی، قطعات فابریک، ۵ سال ضمانت رنگ و ارسال سراسری",
   "lang": "fa",
   "dir": "rtl",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0B0E13",
-  "theme_color": "#0B0E13",
+  "background_color": "#FBF8F1",
+  "theme_color": "#FFFFFF",
   "icons": [
-    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }

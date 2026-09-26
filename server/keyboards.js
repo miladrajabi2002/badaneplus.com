@@ -182,7 +182,7 @@ function settingsMenu() {
     [btn('📍 آدرس', 'set:address'), btn('🕐 ساعات کاری', 'set:hours')],
     [btn('🗺 لینک‌های نقشه', 'set:maps')],
     [btn('🖼 عکس هیرو (تصویر اصلی سایت)', 'heroimg')],
-    [btn('🌐 سئو و برند', 'set:seo')],
+    [btn('🌐 سئو و برند', 'set:seo'), btn('👤 مدیران ربات', 'admins')],
     [BACK_MAIN, CLOSE],
   );
 }
@@ -210,6 +210,31 @@ function settingsSeoMenu() {
 function heroPresetsMenu(presets) {
   const rows = presets.map(([t1, t2], i) => [btn(`${fa(i + 1)}. ${t1} ${t2}`, `heropreset:${i}`)]);
   return kb(...rows, [btn('✨ نوشتن دستی', 'set:hero'), BACK_SETTINGS, CLOSE]);
+}
+
+// ---------------------------------------------------------------- مدیران
+/** فهرست مدیران: هر غیرمالک دکمه حذف دارد؛ مالک با نشان 👑 */
+function adminsMenu(adminIds, names, ownerIds) {
+  const k = new InlineKeyboard();
+  for (const id of adminIds) {
+    const isOwner = ownerIds.includes(id);
+    const nm = names[id] ? ` — ${String(names[id]).slice(0, 18)}` : '';
+    const label = `${isOwner ? '👑' : '👤'} ${fa(id)}${nm}`;
+    k.text(isOwner ? label : `${label} 🗑`, isOwner ? 'noop' : `admin_del:${id}`).row();
+  }
+  k.text('➕ افزودن مدیر', 'admin_add').row();
+  k.text(BACK_SETTINGS.text, BACK_SETTINGS.data).text(CLOSE.text, CLOSE.data);
+  return k;
+}
+
+function adminAddKb() {
+  return kb([btn('❌ لغو', 'admins')]);
+}
+
+function adminConfirmDelete(id) {
+  return kb(
+    [btn('🗑 بله، حذف کن', `admin_delconfirm:${id}`), btn('❌ نه', 'admins')],
+  );
 }
 
 /** زیرمنوی ویرایش متن سئوی خودرو (جدید — رفع دکمه مرده) */
@@ -292,6 +317,6 @@ module.exports = {
   mainMenu, productsMenu, productList, productDetail, productEditFields,
   carPicker, catPicker, BADGE_OPTIONS, badgePicker, confirmAdd, confirmDelete, cancelKb,
   carsMenu, carDetail, carSeoMenu, settingsMenu, settingsMapsMenu, settingsSeoMenu,
-  heroPresetsMenu, backTo, postsMenu, postsList, postDetail, postConfirmDelete, postCatPicker,
-  statsMenu,
+  heroPresetsMenu, adminsMenu, adminAddKb, adminConfirmDelete, backTo, postsMenu, postsList,
+  postDetail, postConfirmDelete, postCatPicker, statsMenu,
 };

@@ -20,7 +20,18 @@ export function generateMetadata({ params }) {
   return {
     title: car.seo_title,
     description: car.meta_description,
+    keywords: [
+      `لوازم بدنه ${car.name}`,
+      `خرید ${car.name}`,
+      ...(car.variants || []).map((v) => `لوازم بدنه ${v}`),
+      'رنگ کوره‌ای',
+      'قطعه فابریک',
+    ],
     alternates: { canonical: `${base}/${car.slug}/` },
+    openGraph: {
+      title: `${car.seo_title} | بدنه پلاس`,
+      description: car.meta_description,
+    },
   };
 }
 

@@ -13,10 +13,26 @@ export function generateMetadata({ params }) {
   const { posts } = buildSiteData();
   const post = posts.find((p) => p.slug === params.slug);
   if (!post) return {};
+  const base = 'https://badaneplus.com';
+  const imgDir = String(post.image || '').startsWith('b-') ? 'blog' : 'products';
+  const cover = `${base}/assets/img/${imgDir}/${post.image}-full.webp`;
   return {
     title: post.title,
     description: post.meta_description,
-    alternates: { canonical: `https://badaneplus.com/blog/${post.slug}/` },
+    keywords: post.keywords || [],
+    alternates: { canonical: `${base}/blog/${post.slug}/` },
+    openGraph: {
+      type: 'article',
+      title: post.title,
+      description: post.meta_description,
+      images: [{ url: cover, alt: post.title }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.meta_description,
+      images: [cover],
+    },
   };
 }
 

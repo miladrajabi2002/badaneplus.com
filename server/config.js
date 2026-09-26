@@ -49,6 +49,15 @@ function writeState(st) {
   fs.renameSync(tmp, config.statePath);
 }
 
+/** شناسه‌های ثابت (مالک): از .env + اولین ادمینی که ربات را claim کرد */
+function getOwnerIds() {
+  const st = readState();
+  const ids = new Set(st.owner_ids || []);
+  if (st.owner_id) ids.add(st.owner_id);
+  (process.env.ADMIN_IDS || '').split(',').map((s) => s.trim()).filter(Boolean).forEach((id) => ids.add(parseInt(id, 10)));
+  return [...ids].filter(Number.isFinite);
+}
+
 /** شناسه ادمین‌ها: pre-seed از .env + ذخیره‌شده در var/bot-state.json */
 function getAdminIds() {
   const st = readState();
@@ -66,4 +75,41 @@ function addAdminId(id) {
   return st.admin_ids;
 }
 
-module.exports = { ...config, getAdminIds, addAdminId };
+/** حذف ادمین — مالک (env یا اولین claimer) حذف نمی‌شود؛ خروجی: موفق/دلیل خطا */
+function removeAdminId(id) {
+  if (getOwnerIds().includes(id)) return { ok: false, reason: 'owner' };
+  const st = readState();
+  const ids = new Set(st.admin_ids || []);
+  if (!ids.has(id)) return { ok: false, reason: 'not_found' };
+  ids.delete(id);
+  st.admin_ids = [...ids].sort((a, b) => a - b);
+  delete (st.admin_names || {})[id];
+  writeState(st);
+  return { ok: true };
+}
+
+/** ثبت مالک اول (فقط یک‌بار — اولین /start) */
+function setOwnerIfEmpty(id) {
+  const st = readState();
+  if (st.owner_id) return st.owner_id;
+  st.owner_id = id;
+  st.owner_ids = [...new Set([...(st.owner_ids || []), id])];
+  writeState(st);
+  return id;
+}
+
+/** نام نمایشی ادمین‌ها (برای فهرست مدیران) */
+function getAdminNames() {
+  return (readState().admin_names || {});
+}
+
+function saveAdminName(id, name) {
+  if (!name) return;
+  const st = readState();
+  st.admin_names = st.admin_names || {};
+  if (st.admin_names[id] === name) return;
+  st.admin_names[id] = String(name).slice(0, 64);
+  writeState(st);
+}
+
+module.exports = { ...config, getAdminIds, addAdminId, removeAdminId, getOwnerIds, setOwnerIfEmpty, getAdminNames, saveAdminName };

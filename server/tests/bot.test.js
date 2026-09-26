@@ -4,7 +4,7 @@ const test = require('node:test');
 const assert = require('node:assert');
 const fs = require('node:fs');
 const path = require('node:path');
-const { makeTempEnv, seedAdmin, mockBot, msgUpdate, photoUpdate, cbUpdate, lastCall, kbHas, kbButtons, tinyPng } = require('./helpers');
+const { makeTempEnv, seedAdmin, mockBot, msgUpdate, photoUpdate, cbUpdate, fwdUpdate, lastCall, kbHas, kbButtons, tinyPng } = require('./helpers');
 
 const env = makeTempEnv();
 seedAdmin(111); // ادمین از قبل ثبت شده
@@ -400,9 +400,9 @@ test('پیشنهادهای عنوان هیرو: لیست + اعمال', async ()
   await drive(cbUpdate(ADMIN, 'heropresets'));
   let p = lastCall(calls, 'editMessageText');
   assert.ok(p.text.includes('پیشنهادهای عنوان هیرو'));
-  assert.ok(kbButtons(p).some((b) => b.callback_data === 'heropreset:2'));
+  assert.ok(kbButtons(p).some((b) => b.callback_data === 'heropreset:0'));
 
-  await drive(cbUpdate(ADMIN, 'heropreset:2'));
+  await drive(cbUpdate(ADMIN, 'heropreset:0'));
   const hero = utils.loadSettings().hero;
   assert.equal(hero.title_1, 'مرجع لوازم بدنه‌ی');
   assert.equal(hero.title_2, 'خودروهای ایرانی');
@@ -410,7 +410,7 @@ test('پیشنهادهای عنوان هیرو: لیست + اعمال', async ()
   assert.ok(p.text.includes('عنوان هیرو عوض شد'));
 });
 
-test('تعویض عکس هیرو: پردازش ۳:۴ + دو سایز WebP', async () => {
+test('تعویض عکس هیرو: پردازش افقی ۴:۳ + دو سایز WebP', async () => {
   await drive(cbUpdate(ADMIN, 'heroimg'));
   await drive(photoUpdate(ADMIN));
   const full = path.join(env.assets, 'img', 'site', 'hero-full.webp');
@@ -419,8 +419,11 @@ test('تعویض عکس هیرو: پردازش ۳:۴ + دو سایز WebP', asyn
   assert.ok(fs.existsSync(card), 'hero-card.webp ساخته شد');
   const sharp = require('sharp');
   const meta = await sharp(full).metadata();
-  assert.equal(meta.width, 864);
-  assert.equal(meta.height, 1152);
+  assert.equal(meta.width, 1600);
+  assert.equal(meta.height, 1200);
+  const metaCard = await sharp(card).metadata();
+  assert.equal(metaCard.width, 1152);
+  assert.equal(metaCard.height, 864);
   const p = lastCall(calls, 'editMessageText');
   assert.ok(p.text.includes('عکس هیرو عوض شد'));
 });
@@ -429,6 +432,83 @@ test('لغو عکس هیرو با «رد»', async () => {
   await drive(cbUpdate(ADMIN, 'heroimg'));
   await drive(msgUpdate(ADMIN, 'رد'));
   assert.ok(lastCall(calls, 'sendMessage', ADMIN).text.includes('لغو شد'));
+});
+
+// ---------------------------------------------------------------- مدیران ربات
+const stateFile = () => path.join(env.var, 'bot-state.json');
+
+test('منوی مدیران: فهرست + دکمه افزودن', async () => {
+  fs.writeFileSync(stateFile(), JSON.stringify({ admin_ids: [111, 222], owner_ids: [111] }));
+  await drive(cbUpdate(ADMIN, 'admins'));
+  const p = lastCall(calls, 'editMessageText');
+  assert.ok(p.text.includes('مدیران ربات'));
+  assert.ok(p.text.includes('👑'), 'نشان مالک');
+  assert.ok(p.text.includes('مالک — حذف نمی‌شود'));
+  const btns = kbButtons(p);
+  assert.ok(btns.some((b) => b.callback_data === 'admin_del:222'), 'دکمه حذف برای غیرمالک');
+  assert.ok(!btns.some((b) => b.callback_data === 'admin_del:111'), 'بدون دکمه حذف برای مالک');
+  assert.ok(btns.some((b) => b.callback_data === 'admin_add'), 'دکمه افزودن');
+});
+
+test('افزودن مدیر با شناسه عددی + اطلاع به مدیر جدید', async () => {
+  await drive(cbUpdate(ADMIN, 'admin_add'));
+  await drive(msgUpdate(ADMIN, '777123456'));
+  const st = JSON.parse(fs.readFileSync(stateFile(), 'utf8'));
+  assert.ok(st.admin_ids.includes(777123456), 'در فهرست ادمین‌ها ثبت شد');
+  const notify = lastCall(calls, 'sendMessage', 777123456);
+  assert.ok(notify && notify.text.includes('مدیر ربات بدنه پلاس'), 'پیام خوش‌آمد به مدیر جدید');
+  const p = lastCall(calls, 'sendMessage', ADMIN);
+  assert.ok(p.text.includes('مدیر جدید ثبت شد'));
+});
+
+test('افزودن مدیر با فوروارد پیام (شناسه + نام)', async () => {
+  await drive(cbUpdate(ADMIN, 'admin_add'));
+  await drive(fwdUpdate(ADMIN, 888001, 'رضا'));
+  const st = JSON.parse(fs.readFileSync(stateFile(), 'utf8'));
+  assert.ok(st.admin_ids.includes(888001), 'شناسه مبدأ فوروارد ثبت شد');
+  assert.equal((st.admin_names || {})[888001], 'رضا', 'نام ذخیره شد');
+});
+
+test('افزودن مدیر تکراری: پیام از قبل مدیر است', async () => {
+  await drive(cbUpdate(ADMIN, 'admin_add'));
+  await drive(msgUpdate(ADMIN, '777123456'));
+  const p = lastCall(calls, 'sendMessage', ADMIN);
+  assert.ok(p.text.includes('از قبل مدیر است'));
+});
+
+test('ورودی نامعتبر در افزودن مدیر', async () => {
+  await drive(cbUpdate(ADMIN, 'admin_add'));
+  await drive(msgUpdate(ADMIN, 'سلام چطوری'));
+  const p = lastCall(calls, 'sendMessage', ADMIN);
+  assert.ok(p.text.includes('متوجه نشدم'));
+});
+
+test('حذف مدیر: تایید + حذف واقعی', async () => {
+  await drive(cbUpdate(ADMIN, 'admin_del:222'));
+  let p = lastCall(calls, 'editMessageText');
+  assert.ok(p.text.includes('222'), 'پیام تایید با شناسه');
+  assert.ok(kbButtons(p).some((b) => b.callback_data === 'admin_delconfirm:222'));
+  await drive(cbUpdate(ADMIN, 'admin_delconfirm:222'));
+  const st = JSON.parse(fs.readFileSync(stateFile(), 'utf8'));
+  assert.ok(!st.admin_ids.includes(222), 'حذف شد');
+  p = lastCall(calls, 'editMessageText');
+  assert.ok(p.text.includes('حذف شد'));
+});
+
+test('حذف مالک ربات ممنوع است', async () => {
+  await drive(cbUpdate(ADMIN, 'admin_del:111'));
+  const c = calls[calls.length - 1];
+  assert.equal(c.method, 'answerCallbackQuery');
+  assert.ok(c.payload.text.includes('حذف نمی‌شود'));
+  const st = JSON.parse(fs.readFileSync(stateFile(), 'utf8'));
+  assert.ok(st.admin_ids.includes(111), 'مالک سر جایش است');
+});
+
+test('امنیت: کال‌بک مدیریت ادمین از غریبه رد می‌شود', async () => {
+  await drive(cbUpdate(STRANGER, 'admin_add'));
+  const c = calls[calls.length - 1];
+  assert.equal(c.method, 'answerCallbackQuery');
+  assert.ok(c.payload.text.includes('دسترسی ندارید'));
 });
 
 // ---------------------------------------------------------------- وبلاگ

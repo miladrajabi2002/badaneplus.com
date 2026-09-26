@@ -1,5 +1,5 @@
-/* BadanePlus service worker — آفلاین + کش استاتیک (نسخه ۳ — سازگار با Next.js) */
-const CACHE = 'badaneplus-v3';
+/* BadanePlus service worker — آفلاین + کش استاتیک (نسخه ۴ — تم روشن) */
+const CACHE = 'badaneplus-v4';
 const PRECACHE = [
   '/assets/img/logo.svg',
   '/assets/fonts/Vazirmatn-Regular.woff2',

@@ -138,14 +138,14 @@ function deleteImage(key) {
   saveManifest(manifest);
 }
 
-/** عکس هیرو: برش مرکزی ۳:۴ → full 864×1152 + card 648×864 (WebP) */
+/** عکس هیرو: برش مرکزی افقی ۴:۳ → full 1600×1200 + card 1152×864 (WebP) */
 async function saveHeroImage(buffer) {
   const sharp = require('sharp');
   const meta = await sharp(buffer).metadata();
   fs.mkdirSync(config.imgSiteDir, { recursive: true });
-  await sharp(buffer).rotate().resize(864, 1152, { fit: 'cover' }).webp({ quality: 82 })
+  await sharp(buffer).rotate().resize(1600, 1200, { fit: 'cover' }).webp({ quality: 82 })
     .toFile(path.join(config.imgSiteDir, 'hero-full.webp'));
-  await sharp(buffer).rotate().resize(648, 864, { fit: 'cover' }).webp({ quality: 78 })
+  await sharp(buffer).rotate().resize(1152, 864, { fit: 'cover' }).webp({ quality: 80 })
     .toFile(path.join(config.imgSiteDir, 'hero-card.webp'));
   return { w: meta.width, h: meta.height };
 }

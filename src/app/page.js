@@ -15,7 +15,7 @@ const FAQ_MAIN = [
   },
   {
     q: 'چرا سفارش فقط تلفنی است؟',
-    a: 'قیمت قطعات بدنه با نوسان بازار تغییر می‌کند و موجودی روزانه به‌روز می‌شود. با تماس تلفنی، قیمت روز، موجودی دقیق و مشاوره فنی رایگان در همان تماس به شما اعلام می‌شود تا مطمئن‌ترین خرید را داشته باشید.',
+    a: 'قیمت قطعات بدنه با نوسان بازار تغییر می‌کند و موجودی روزانه به‌روز می‌شود. با یک تماس، قیمت روز، موجودی دقیق و مشاوره فنی رایگان را همان‌جا می‌شنوید.',
   },
   {
     q: 'رنگ کوره‌ای شرکتی چه تفاوتی با رنگ معمولی دارد؟',
@@ -41,7 +41,6 @@ export function generateMetadata() {
   const { settings } = buildSiteData();
   const base = (settings.site || {}).url || 'https://badaneplus.com';
   return {
-    title: 'بدنه پلاس | لوازم بدنه خودروهای ایرانی — رنگ کوره‌ای + ۵ سال ضمانت رنگ',
     description: (settings.site || {}).description,
     alternates: { canonical: `${base}/` },
   };
@@ -104,7 +103,7 @@ export default function HomePage() {
           </div>
           <div className="hero-visual" data-reveal data-delay="3">
             <div className="hero-frame">
-              <img src="/assets/img/site/hero-card.webp" alt="کاپوت خودرو با نورپردازی کوره‌ای — بدنه پلاس" width="648" height="864" fetchPriority="high" decoding="async" />
+              <img src="/assets/img/site/hero-card.webp" alt="کاپوت فابریک با رنگ کوره‌ای — بدنه پلاس" width="1152" height="864" fetchPriority="high" decoding="async" />
               <div className="hero-chip chip-1">
                 <IconChipShield />
                 <div><b>ضمانت رنگ</b><span>۵ سال کامل</span></div>
@@ -147,8 +146,8 @@ export default function HomePage() {
         <div className="container">
           <div className="section-head" data-reveal>
             <span className="eyebrow">چرا بدنه پلاس؟</span>
-            <h2 className="section-title">استانداردی که <em className="grad-text">پایه‌گذار</em> آن هستیم</h2>
-            <p className="section-sub">در بازار لوازم بدنه، تفاوت اصلی بین یک خرید پشیمان‌کننده و یک خرید مطمئن، کیفیت قطعه و رنگ آن است. ما هر دو را تضمین می‌کنیم.</p>
+            <h2 className="section-title">چهار دلیل برای <em className="grad-text">خرید از بدنه پلاس</em></h2>
+            <p className="section-sub">در بازار لوازم بدنه، کیفیت قطعه و کیفیت رنگ است که خرید را موفق یا پشیمان‌کننده می‌کند. هر دو را همین‌جا تضمین می‌کنیم.</p>
           </div>
           <div className="usp-grid">
             <article className="usp-card usp-kiln" data-reveal data-delay="1">
@@ -247,7 +246,7 @@ export default function HomePage() {
             </svg>
           </div>
           <div className="warranty-copy" data-reveal data-delay="2">
-            <span className="eyebrow eyebrow-dark">ضمانت واقعی، نه شعار</span>
+            <span className="eyebrow eyebrow-dark">ضمانت نوشته‌شده روی فاکتور</span>
             <h2 className="section-title">۵ سال ضمانت رنگ روی <em className="grad-text">تمام اجناس</em></h2>
             <p>
               <span className="only-desktop">ضمانت رنگ بدنه پلاس شامل برفک‌زدگی، تغییر رنگ، ترک خوردن و جوش‌زدگی سطح رنگ است و مکتوب روی فاکتور خرید درج می‌شود. چون رنگ کوره‌ای شرکتی که روی قطعات اجرا می‌کنیم، همان فرآیند پخت کارخانه را دارد، می‌توانیم این تعهد را بدهیم؛ رنگ معمولی چنین ضمانتی را ممکن نمی‌کند.</span>

@@ -9,27 +9,56 @@ export const viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  themeColor: '#0B0E13',
+  themeColor: '#FFFFFF',
 };
+
+const SITE_KEYWORDS = [
+  'لوازم بدنه خودرو',
+  'لوازم بدنه خودروهای ایرانی',
+  'لوازم بدنه ۲۰۶',
+  'لوازم بدنه سمند',
+  'لوازم بدنه پراید',
+  'لوازم بدنه ۴۰۵',
+  'کاپوت ۲۰۶',
+  'سپر پراید',
+  'گلگیر ۴۰۵',
+  'سینی فن ۲۰۶',
+  'رنگ کوره‌ای',
+  'رنگ کوره‌ای چیست',
+  'قطعات فابریک',
+  'قطعه فابریک چیست',
+  'فروش لوازم بدنه تهران',
+  'لوازم بدنه امیرکبیر',
+];
 
 export function generateMetadata() {
   const { settings } = buildSiteData();
   const site = settings.site || {};
   const c = settings.contact || {};
+  const geoPos = `${c.geo_lat || '35.6892'};${c.geo_lng || '51.3890'}`;
   return {
     metadataBase: new URL(site.url || 'https://badaneplus.com'),
     title: {
-      default: 'بدنه پلاس | لوازم بدنه خودروهای ایرانی — رنگ کوره‌ای + ۵ سال ضمانت رنگ',
-      template: '%s',
+      default: 'بدنه پلاس | مرجع لوازم بدنه خودروهای ایرانی — رنگ کوره‌ای + ۵ سال ضمانت رنگ',
+      template: '%s | بدنه پلاس',
     },
     description: site.description,
+    keywords: SITE_KEYWORDS,
+    applicationName: 'بدنه پلاس',
     openGraph: {
       type: 'website',
-      siteName: 'بدنه پلاس | BadanePlus',
+      siteName: 'بدنه پلاس',
       locale: 'fa_IR',
-      images: [{ url: '/assets/img/og-image.webp', width: 1344, height: 768 }],
+      title: 'بدنه پلاس | مرجع لوازم بدنه خودروهای ایرانی',
+      description: site.description,
+      images: [{ url: '/assets/img/og-image.webp', width: 1200, height: 630, alt: 'بدنه پلاس — لوازم بدنه خودروهای ایرانی با رنگ کوره‌ای' }],
     },
-    twitter: { card: 'summary_large_image' },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'بدنه پلاس | مرجع لوازم بدنه خودروهای ایرانی',
+      description: site.description,
+      images: ['/assets/img/og-image.webp'],
+    },
     icons: {
       icon: [
         { url: '/favicon.svg', type: 'image/svg+xml' },
@@ -42,6 +71,9 @@ export function generateMetadata() {
     other: {
       'geo.region': c.geo_region || 'IR-07',
       'geo.placename': c.city || 'تهران',
+      'geo.position': geoPos,
+      'ICBM': `${c.geo_lat || '35.6892'}, ${c.geo_lng || '51.3890'}`,
+      'geo.country': 'IR',
     },
   };
 }
@@ -71,7 +103,7 @@ export default function RootLayout({ children }) {
               <img src="/assets/img/logo.svg" alt="لوگوی بدنه پلاس" width="44" height="44" className="brand-mark" />
               <span className="brand-text">
                 <strong>بدنه‌پلاس</strong>
-                <small>BadanePlus</small>
+                <small>لوازم بدنه خودروهای ایرانی</small>
               </span>
             </a>
             <nav className="nav" aria-label="منوی اصلی">
@@ -123,7 +155,7 @@ export default function RootLayout({ children }) {
               <div className="footer-col footer-brand">
                 <a href="/" className="brand">
                   <img src="/assets/img/logo.svg" alt="لوگوی بدنه پلاس" width="40" height="40" className="brand-mark" />
-                  <span className="brand-text"><strong>بدنه‌پلاس</strong><small>BadanePlus</small></span>
+                  <span className="brand-text"><strong>بدنه‌پلاس</strong><small>لوازم بدنه خودروهای ایرانی</small></span>
                 </a>
                 <p>لوازم بدنه خودروهای ایرانی با رنگ کوره‌ای شرکتی و ۵ سال ضمانت رنگ.</p>
                 <a href={`tel:${c.phone}`} className="footer-tel">
@@ -147,8 +179,8 @@ export default function RootLayout({ children }) {
               </div>
             </div>
             <div className="footer-bottom">
-              <p>© ۱۴۰۴ بدنه پلاس</p>
-              <p className="footer-en">BadanePlus.com</p>
+              <p>© ۱۴۰۴ بدنه پلاس — تمام حقوق محفوظ است.</p>
+              <p className="footer-en">سامانه عرضه لوازم بدنه خودروهای ایرانی</p>
             </div>
           </div>
         </footer>

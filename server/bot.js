@@ -12,15 +12,15 @@ const registerContent = require('./bot.content');
 const TEXTS = {
   welcome: '🏠 <b>پنل مدیریت بدنه پلاس</b>\n\nبه مرکز کنترل سایت خوش آمدید.\nهر تغییری اینجا ثبت کنید، سایت به‌صورت خودکار بازسازی می‌شود. ⚡️',
   unauthorized: '⛔️ <b>دسترسی ندارید</b>\n\nاین ربات فقط برای مدیران بدنه پلاس است.\nشناسه چت شما: <code>%s</code>\nبرای دریافت دسترسی، این شناسه را به مدیر سایت بدهید.',
-  claimed: '🎉 <b>خوش آمدید مدیر!</b>\n\nشما به‌عنوان مدیر اول این ربات ثبت شدید.\nبرای افزودن مدیرهای دیگر، شناسه او را در فایل ‎.env (قسمت ADMIN_IDS) اضافه کنید.',
+  claimed: '🎉 <b>خوش آمدید مدیر!</b>\n\nشما به‌عنوان مدیر اول و مالک این ربات ثبت شدید.\nبرای افزودن مدیرهای دیگر: ⚙️ تنظیمات ← 👤 مدیران ربات.',
   closed: 'پنجره بسته شد. 🗑',
 };
 
-// ۵ پیشنهاد عنوان هیرو — از منوی ربات با یک لمس اعمال می‌شود
+// ۵ پیشنهاد عنوان هیرو — از منوی ربات با یک لمس اعمال می‌شود (اولی = عنوان فعلی)
 const HERO_PRESETS = [
-  ['بدنه‌ی خودرویت،', 'مثل روزِ اولِ کارخانه'],
-  ['قطعه‌ی اصلی،', 'خریدِ مطمئن'],
   ['مرجع لوازم بدنه‌ی', 'خودروهای ایرانی'],
+  ['قطعه‌ی اصلی،', 'خریدِ مطمئن'],
+  ['بدنه‌ی خودرویت،', 'مثل روزِ اولِ کارخانه'],
   ['فابریک، رنگ کوره‌ای،', 'با ضمانت'],
   ['خرید یک‌بار،', 'خیال راحتِ سال‌ها'],
 ];
@@ -52,21 +52,27 @@ function createBot(deps = {}) {
   // ---------------------------------------------------------------- ادمین
   const isAdmin = (uid) => config.getAdminIds().includes(uid);
 
-  /** اولین /start ادمین را ثبت می‌کند (claim) */
+  /** اولین /start ادمین را ثبت می‌کند (claim) + نام ادمین‌ها را به‌روز نگه می‌دارد */
   async function guard(ctx) {
     const uid = ctx.from.id;
     const admins = config.getAdminIds();
     if (!admins.length) {
       config.addAdminId(uid);
-      log.warn(`ADMIN CLAIMED by ${uid} (${ctx.from.first_name})`);
+      config.setOwnerIfEmpty(uid);
+      config.saveAdminName(uid, ctx.from.first_name || ctx.from.username);
+      log.warn(`ADMIN CLAIMED by ${uid} (${ctx.from.first_name}) — owner`);
       if (ctx.callbackQuery) {
-        await ctx.answerCallbackQuery('🎉 شما مدیر این ربات شدید.', { show_alert: true });
+        await ctx.answerCallbackQuery('🎉 شما مدیر و مالک این ربات شدید.', { show_alert: true });
       } else {
         await ctx.reply(TEXTS.claimed, { parse_mode: 'HTML' });
       }
       return true;
     }
-    return admins.includes(uid);
+    if (admins.includes(uid)) {
+      config.saveAdminName(uid, ctx.from.first_name || ctx.from.username);
+      return true;
+    }
+    return false;
   }
 
   // ---------------------------------------------------------------- کمک‌تابع‌ها
@@ -194,7 +200,11 @@ function createBot(deps = {}) {
   });
 
   bot.command('id', async (ctx) => {
-    await ctx.reply(`🆔 شناسه چت شما: <code>${ctx.from.id}</code>`, { parse_mode: 'HTML' });
+    const isAdminNow = isAdmin(ctx.from.id);
+    await ctx.reply(
+      `🆔 شناسه چت شما: <code>${ctx.from.id}</code>${isAdminNow ? '\n✅ شما مدیر ربات هستید.' : ''}`,
+      { parse_mode: 'HTML' },
+    );
   });
 
   bot.on('callback_query', async (ctx) => {

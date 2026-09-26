@@ -2,6 +2,103 @@
 module.exports = function registerContent({ route, msgRoute, h }) {
   const { utils, k, editOrAnswer, rebuildAndReport } = h;
 
+  // ================================================================ مدیران ربات
+  function adminsText() {
+    const ids = h.config.getAdminIds();
+    const names = h.config.getAdminNames();
+    const owners = h.config.getOwnerIds();
+    const lines = ids.map((id) => {
+      const crown = owners.includes(id) ? ' 👑 (مالک — حذف نمی‌شود)' : '';
+      const nm = names[id] ? ` — ${names[id]}` : '';
+      return `• <code>${id}</code>${nm}${crown}`;
+    });
+    return '👤 <b>مدیران ربات</b>\n\n' + lines.join('\n') +
+      '\n\nبرای حذف، دکمه کنار نام مدیر را بزنید.';
+  }
+
+  route({ exact: 'admins' }, async (ctx) => {
+    h.clearState(ctx.from.id);
+    const ids = h.config.getAdminIds();
+    const names = h.config.getAdminNames();
+    const owners = h.config.getOwnerIds();
+    await editOrAnswer(ctx, adminsText(), k.adminsMenu(ids, names, owners));
+    await ctx.answerCallbackQuery();
+  });
+
+  route({ exact: 'admin_add' }, async (ctx) => {
+    h.setState(ctx.from.id, 'adminAdd_value', {});
+    await editOrAnswer(
+      ctx,
+      '➕ <b>افزودن مدیر</b>\n\nیکی از این دو راه را بزنید:\n\n1️⃣ شناسه عددی او را بفرستید (مثل <code>123456789</code>)\n2️⃣ یک پیام از او برایتان Forward کنید\n\n💡 شناسه را خودش می‌تواند با /id در ربات بگیرد.',
+      k.adminAddKb(),
+    );
+    await ctx.answerCallbackQuery();
+  });
+
+  msgRoute('adminAdd_value', async (ctx, s) => {
+    h.clearState(ctx.from.id);
+    // راه ۲: فوروارد — از مبدأ واقعی پیام شناسه گرفته می‌شود
+    const fwd =
+      (ctx.message.forward_origin && (
+        ctx.message.forward_origin.sender_user?.id ||
+        (ctx.message.forward_origin.type === 'user' && ctx.message.forward_origin.sender_user?.id)
+      )) ||
+      ctx.message.forward_from?.id ||
+      null;
+    let newId = fwd;
+    let newName = fwd ? (ctx.message.forward_origin.sender_user?.first_name || ctx.message.forward_from?.first_name || '') : '';
+    // راه ۱: شناسه عددی
+    if (!newId) {
+      const digits = String(ctx.message.text || '').replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[^0-9]/g, '');
+      if (digits.length < 5 || digits.length > 12) {
+        h.setState(ctx.from.id, 'adminAdd_value', {});
+        return ctx.reply(
+          '⚠️ متوجه نشدم.\nشناسه عددی او را بفرستید (مثل <code>123456789</code>) یا پیامی از او را فوروارد کنید.',
+          { parse_mode: 'HTML', reply_markup: k.adminAddKb() },
+        );
+      }
+      newId = parseInt(digits, 10);
+    }
+    if (h.config.getAdminIds().includes(newId)) {
+      return ctx.reply('ℹ️ این کاربر از قبل مدیر است.', { reply_markup: k.kb([k.btn('👤 مدیران', 'admins')]) });
+    }
+    h.config.addAdminId(newId);
+    if (newName) h.config.saveAdminName(newId, newName);
+    h.log.warn(`ADMIN ADDED by ${ctx.from.id}: ${newId}`);
+    // اطلاع به مدیر جدید (اگر ربات را استارت کرده باشد پیام می‌رسد)
+    try {
+      await ctx.api.sendMessage(newId, '🎉 شما به‌عنوان مدیر ربات بدنه پلاس ثبت شدید.\nدستور /start را بزنید.', { parse_mode: 'HTML' });
+    } catch { /* هنوز ربات را استارت نکرده — طبیعی است */ }
+    return ctx.reply(
+      `✅ مدیر جدید ثبت شد: <code>${newId}</code>${newName ? ` — ${newName}` : ''}\n\nاگر او هنوز ربات را استارت نکرده باشد، پیام خوش‌آمد به دستش نمی‌رسد؛ به او بگویید /start بزنید.`,
+      { parse_mode: 'HTML', reply_markup: k.kb([k.btn('👤 مدیران ربات', 'admins')]) },
+    );
+  });
+
+  route({ prefix: 'admin_del:' }, async (ctx) => {
+    const id = parseInt(ctx.callbackQuery.data.split(':')[1], 10);
+    if (!Number.isFinite(id)) return ctx.answerCallbackQuery('⚠️ گزینه نامعتبر است');
+    if (h.config.getOwnerIds().includes(id)) {
+      return ctx.answerCallbackQuery('⛔️ مالک ربات حذف نمی‌شود', { show_alert: true });
+    }
+    await editOrAnswer(ctx, `⚠️ دسترسی مدیر <code>${id}</code> حذف شود؟`, k.adminConfirmDelete(id));
+    await ctx.answerCallbackQuery();
+  });
+
+  route({ prefix: 'admin_delconfirm:' }, async (ctx) => {
+    const id = parseInt(ctx.callbackQuery.data.split(':')[1], 10);
+    const res = h.config.removeAdminId(id);
+    if (!res.ok) {
+      return ctx.answerCallbackQuery(res.reason === 'owner' ? '⛔️ مالک حذف نمی‌شود' : '⚠️ پیدا نشد', { show_alert: true });
+    }
+    h.log.warn(`ADMIN REMOVED by ${ctx.from.id}: ${id}`);
+    const ids = h.config.getAdminIds();
+    const names = h.config.getAdminNames();
+    const owners = h.config.getOwnerIds();
+    await editOrAnswer(ctx, `🗑 حذف شد.\n\n${adminsText()}`, k.adminsMenu(ids, names, owners));
+    await ctx.answerCallbackQuery('✅ حذف شد');
+  });
+
   // ================================================================ تنظیمات
   const SETTING_LABELS = {
     phone: ['📞 شماره تماس ثابت', 'قالب: 02112345678'],
@@ -146,9 +243,9 @@ module.exports = function registerContent({ route, msgRoute, h }) {
     h.setState(ctx.from.id, 'heroPhoto_photo', {});
     await ctx.reply(
       '🖼 <b>عکس جدید هیرو</b>\n\n' +
-      'عکس را همینجا بفرستید. 📐 نسبت تصویر عمودی <b>۳:۴</b> است (مثل ۱۰۸۰×۱۴۴۰).\n' +
+      'عکس را همینجا بفرستید. 📐 نسبت تصویر <b>افقی ۴:۳</b> است (مثل ۱۶۰۰×۱۲۰۰ یا ۱۱۵۲×۸۶۴).\n' +
       'اگر نسبت عکس فرق کند، به‌صورت خودکار برش وسط (center-crop) می‌شود.\n\n' +
-      '💡 پیشنهاد: عکس باکیفیت از یک قطعه بدنه با نورپردازی خوب — پس‌زمینه‌ی تیره با سایت هماهنگ‌تر است.\n\n' +
+      '💡 پیشنهاد: عکس باکیفیت از یک قطعه بدنه با نورپردازی روشن — پس‌زمینه‌ی روشن با تم سفید-طلایی سایت هماهنگ‌تر است.\n\n' +
       'برای انصراف «رد» را بفرستید.',
       { parse_mode: 'HTML', reply_markup: k.kb([k.btn('◀️ بازگشت به تنظیمات', 'settings')]) },
     );
@@ -172,7 +269,7 @@ module.exports = function registerContent({ route, msgRoute, h }) {
       const report = await rebuildAndReport(ctx);
       return ctx.api.editMessageText(
         wait.chat.id, wait.message_id,
-        `✅ عکس هیرو عوض شد!\n📐 ابعاد دریافتی: ${utils.fa(info.w)}×${utils.fa(info.h)}\n🔄 تبدیل خودکار به WebP (۸۶۴×۱۱۵۲ + ۶۴۸×۸۶۴) انجام شد.\n\n${report}`,
+        `✅ عکس هیرو عوض شد!\n📐 ابعاد دریافتی: ${utils.fa(info.w)}×${utils.fa(info.h)}\n🔄 تبدیل خودکار به WebP افقی ۴:۳ (۱۶۰۰×۱۲۰۰ + ۱۱۵۲×۸۶۴) انجام شد.\n\n${report}`,
         { parse_mode: 'HTML', reply_markup: k.kb([k.btn('⚙️ تنظیمات سایت', 'settings'), k.btn('🏠 منوی اصلی', 'main')]) },
       );
     } catch (e) {

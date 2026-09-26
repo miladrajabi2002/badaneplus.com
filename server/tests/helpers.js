@@ -122,6 +122,26 @@ function cbUpdate(userId, data) {
   };
 }
 
+/** پیام فورواردشده از کاربر دیگر (ساختار Bot API ۷+: forward_origin) */
+function fwdUpdate(userId, fromUserId, fromName = 'کاربر فوروارد') {
+  updateCounter += 1;
+  return {
+    update_id: updateCounter,
+    message: {
+      message_id: updateCounter,
+      from: baseFrom(userId),
+      chat: { id: userId, type: 'private' },
+      date: Math.floor(Date.now() / 1000),
+      text: 'پیام فورواردشده',
+      forward_origin: {
+        type: 'user',
+        date: Math.floor(Date.now() / 1000),
+        sender_user: { id: fromUserId, is_bot: false, first_name: fromName },
+      },
+    },
+  };
+}
+
 // ---------------------------------------------------------------- ادعاهای کمکی
 function lastCall(calls, method, chatId) {
   for (let i = calls.length - 1; i >= 0; i--) {
@@ -148,6 +168,6 @@ async function tinyPng() {
 
 module.exports = {
   makeTempEnv, seedAdmin, mockBot, fakeResult,
-  msgUpdate, photoUpdate, cbUpdate,
+  msgUpdate, photoUpdate, cbUpdate, fwdUpdate,
   lastCall, kbButtons, kbHas, tinyPng,
 };
